@@ -8,6 +8,7 @@ package dm
 import (
 	"bytes"
 	"fmt"
+	"github.com/echo5188/DmLib/i18n"
 	"runtime"
 )
 
