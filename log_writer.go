@@ -30,7 +30,7 @@ type logWriter struct {
 	flushFreq  int
 	filePath   string
 	filePrefix string
-	buffer     *Dm_build_283
+	buffer     *Buffer
 }
 
 func (lw *logWriter) doRun() {
@@ -55,7 +55,7 @@ func (lw *logWriter) doRun() {
 				}
 			}
 		case <-time.After(time.Duration(LogFlushFreq) * time.Millisecond):
-			if LogLevel != LOG_OFF && lw.buffer.Dm_build_288() > 0 {
+			if LogLevel != LOG_OFF && lw.buffer.GetBufferSize() > 0 {
 				lw.doFlush(lw.buffer)
 				i = 0
 			}
@@ -65,13 +65,13 @@ func (lw *logWriter) doRun() {
 	}
 }
 
-func (lw *logWriter) doFlush(buffer *Dm_build_283) {
+func (lw *logWriter) doFlush(buffer *Buffer) {
 	if lw.needCreateNewFile() {
 		lw.closeCurrentFile()
 		lw.logFile = lw.createNewFile()
 	}
 	if lw.logFile != nil {
-		buffer.Dm_build_303(lw.logFile, buffer.Dm_build_288())
+		buffer.Dm_build_303(lw.logFile, buffer.GetBufferSize())
 	}
 }
 func (lw *logWriter) closeCurrentFile() {
@@ -109,11 +109,11 @@ func (lw *logWriter) beforeExit() {
 	var ibytes []byte
 	for ibytes = <-lw.flushQueue; ibytes != nil; ibytes = <-lw.flushQueue {
 		lw.buffer.Dm_build_309(ibytes, 0, len(ibytes))
-		if lw.buffer.Dm_build_288() >= LogBufferSize {
+		if lw.buffer.GetBufferSize() >= LogBufferSize {
 			lw.doFlush(lw.buffer)
 		}
 	}
-	if lw.buffer.Dm_build_288() > 0 {
+	if lw.buffer.GetBufferSize() > 0 {
 		lw.doFlush(lw.buffer)
 	}
 }

@@ -123,7 +123,7 @@ func (typeDescriptor *TypeDescriptor) parseDescByName() error {
 		return err
 	}
 	typeDescriptor.m_serverEncoding = typeDescriptor.m_conn.getServerEncoding()
-	err = typeDescriptor.unpack(Dm_build_366(buf))
+	err = typeDescriptor.unpack(BuildMsg(buf))
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func getPackSize(typeDesc *TypeDescriptor) (int, error) {
 	return len, nil
 }
 
-func pack(typeDesc *TypeDescriptor, msg *Dm_build_361) error {
+func pack(typeDesc *TypeDescriptor, msg *Msg) error {
 	switch typeDesc.column.colType {
 	case ARRAY, SARRAY:
 		return packArray(typeDesc, msg)
@@ -228,7 +228,7 @@ func getPackArraySize(arrDesc *TypeDescriptor) (int, error) {
 	l += USINT_SIZE
 
 	serverEncoding := arrDesc.getServerEncoding()
-	ret := Dm_build_1.Dm_build_217(name, serverEncoding, arrDesc.m_conn)
+	ret := Packet.Dm_build_217(name, serverEncoding, arrDesc.m_conn)
 	l += len(ret)
 
 	l += ULINT_SIZE
@@ -247,7 +247,7 @@ func getPackArraySize(arrDesc *TypeDescriptor) (int, error) {
 	return l, nil
 }
 
-func packArray(arrDesc *TypeDescriptor, msg *Dm_build_361) error {
+func packArray(arrDesc *TypeDescriptor, msg *Msg) error {
 
 	msg.Dm_build_416(arrDesc.column.colType)
 
@@ -262,7 +262,7 @@ func packArray(arrDesc *TypeDescriptor, msg *Dm_build_361) error {
 	return pack(arrDesc.m_arrObj, msg)
 }
 
-func packRecord(strctDesc *TypeDescriptor, msg *Dm_build_361) error {
+func packRecord(strctDesc *TypeDescriptor, msg *Msg) error {
 
 	msg.Dm_build_416(strctDesc.column.colType)
 
@@ -292,7 +292,7 @@ func getPackRecordSize(strctDesc *TypeDescriptor) (int, error) {
 	l += USINT_SIZE
 
 	serverEncoding := strctDesc.getServerEncoding()
-	ret := Dm_build_1.Dm_build_217(name, serverEncoding, strctDesc.m_conn)
+	ret := Packet.Dm_build_217(name, serverEncoding, strctDesc.m_conn)
 	l += len(ret)
 
 	l += ULINT_SIZE
@@ -321,7 +321,7 @@ func getPackClassSize(strctDesc *TypeDescriptor) (int, error) {
 	l += USINT_SIZE
 
 	serverEncoding := strctDesc.getServerEncoding()
-	ret := Dm_build_1.Dm_build_217(name, serverEncoding, strctDesc.m_conn)
+	ret := Packet.Dm_build_217(name, serverEncoding, strctDesc.m_conn)
 	l += len(ret)
 
 	l += ULINT_SIZE
@@ -340,7 +340,7 @@ func getPackClassSize(strctDesc *TypeDescriptor) (int, error) {
 	return l, nil
 }
 
-func packClass(strctDesc *TypeDescriptor, msg *Dm_build_361) error {
+func packClass(strctDesc *TypeDescriptor, msg *Msg) error {
 
 	msg.Dm_build_416(strctDesc.column.colType)
 
@@ -363,7 +363,7 @@ func packClass(strctDesc *TypeDescriptor, msg *Dm_build_361) error {
 	return nil
 }
 
-func (typeDescriptor *TypeDescriptor) unpack(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpack(buffer *Msg) error {
 
 	typeDescriptor.column.colType = buffer.Dm_build_490()
 
@@ -382,7 +382,7 @@ func (typeDescriptor *TypeDescriptor) unpack(buffer *Dm_build_361) error {
 	return nil
 }
 
-func (typeDescriptor *TypeDescriptor) unpackArray(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpackArray(buffer *Msg) error {
 
 	typeDescriptor.m_sqlName.m_name = buffer.Dm_build_540(typeDescriptor.getServerEncoding(), typeDescriptor.m_conn)
 
@@ -403,7 +403,7 @@ func (typeDescriptor *TypeDescriptor) unpackArray(buffer *Dm_build_361) error {
 	return typeDescriptor.m_arrObj.unpack(buffer)
 }
 
-func (typeDescriptor *TypeDescriptor) unpackRecord(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpackRecord(buffer *Msg) error {
 
 	typeDescriptor.m_sqlName.m_name = buffer.Dm_build_540(typeDescriptor.getServerEncoding(), typeDescriptor.m_conn)
 
@@ -426,7 +426,7 @@ func (typeDescriptor *TypeDescriptor) unpackRecord(buffer *Dm_build_361) error {
 	return nil
 }
 
-func (typeDescriptor *TypeDescriptor) unpackClnt_nestTab(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpackClnt_nestTab(buffer *Msg) error {
 
 	typeDescriptor.m_maxCnt = int(buffer.Dm_build_490())
 
@@ -437,7 +437,7 @@ func (typeDescriptor *TypeDescriptor) unpackClnt_nestTab(buffer *Dm_build_361) e
 	return nil
 }
 
-func (typeDescriptor *TypeDescriptor) unpackClnt(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpackClnt(buffer *Msg) error {
 
 	typeDescriptor.m_outerId = int(buffer.Dm_build_490())
 
@@ -458,7 +458,7 @@ func (typeDescriptor *TypeDescriptor) unpackClnt(buffer *Dm_build_361) error {
 	return nil
 }
 
-func (typeDescriptor *TypeDescriptor) unpackClass(buffer *Dm_build_361) error {
+func (typeDescriptor *TypeDescriptor) unpackClass(buffer *Msg) error {
 
 	typeDescriptor.m_sqlName.m_name = buffer.Dm_build_540(typeDescriptor.getServerEncoding(), typeDescriptor.m_conn)
 
@@ -620,10 +620,10 @@ func calcChkDescLen(desc *TypeDescriptor) (int, error) {
 
 func (typeDescriptor *TypeDescriptor) makeChkDesc_array(offset int, desc *TypeDescriptor) (int, error) {
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, ARRAY)
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, ARRAY)
 	offset += USINT_SIZE
 
-	Dm_build_1.Dm_build_17(typeDescriptor.m_descBuf, offset, int32(desc.m_length))
+	Packet.BuildPacket_Dm_build_17(typeDescriptor.m_descBuf, offset, int32(desc.m_length))
 	offset += ULINT_SIZE
 
 	return typeDescriptor.makeChkDesc(offset, desc)
@@ -631,10 +631,10 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_array(offset int, desc *TypeDe
 
 func (typeDescriptor *TypeDescriptor) makeChkDesc_record(offset int, desc *TypeDescriptor) (int, error) {
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, PLTYPE_RECORD)
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, PLTYPE_RECORD)
 	offset += USINT_SIZE
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_size))
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_size))
 	offset += USINT_SIZE
 	var err error
 	for i := 0; i < desc.m_size; i++ {
@@ -657,13 +657,13 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_buildin(offset int, desc *Type
 		scale = desc.getScale()
 	}
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, dtype)
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, dtype)
 	offset += USINT_SIZE
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(prec))
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(prec))
 	offset += USINT_SIZE
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(scale))
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(scale))
 	offset += USINT_SIZE
 
 	return offset
@@ -671,7 +671,7 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_buildin(offset int, desc *Type
 
 func (typeDescriptor *TypeDescriptor) makeChkDesc_class_normal(offset int, desc *TypeDescriptor) (int, error) {
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_size))
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_size))
 	offset += USINT_SIZE
 	var err error
 
@@ -687,10 +687,10 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_class_normal(offset int, desc 
 
 func (typeDescriptor *TypeDescriptor) makeChkDesc_class_clnt(offset int, desc *TypeDescriptor) (int, error) {
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_cltnType))
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, int16(desc.m_cltnType))
 	offset += USINT_SIZE
 
-	Dm_build_1.Dm_build_17(typeDescriptor.m_descBuf, offset, int32(desc.getMaxCnt()))
+	Packet.BuildPacket_Dm_build_17(typeDescriptor.m_descBuf, offset, int32(desc.getMaxCnt()))
 	offset += ULINT_SIZE
 
 	switch desc.m_cltnType {
@@ -707,7 +707,7 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_class_clnt(offset int, desc *T
 
 func (typeDescriptor *TypeDescriptor) makeChkDesc_class(offset int, desc *TypeDescriptor) (int, error) {
 
-	Dm_build_1.Dm_build_12(typeDescriptor.m_descBuf, offset, CLASS)
+	Packet.Dm_build_12(typeDescriptor.m_descBuf, offset, CLASS)
 	offset += USINT_SIZE
 
 	isClnt := false
@@ -716,9 +716,9 @@ func (typeDescriptor *TypeDescriptor) makeChkDesc_class(offset int, desc *TypeDe
 	}
 
 	if isClnt {
-		Dm_build_1.Dm_build_2(typeDescriptor.m_descBuf, offset, byte(1))
+		Packet.Dm_build_2(typeDescriptor.m_descBuf, offset, byte(1))
 	} else {
-		Dm_build_1.Dm_build_2(typeDescriptor.m_descBuf, offset, byte(0))
+		Packet.Dm_build_2(typeDescriptor.m_descBuf, offset, byte(0))
 	}
 
 	offset += BYTE_SIZE

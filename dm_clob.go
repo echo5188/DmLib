@@ -45,29 +45,29 @@ func newClobFromDB(value []byte, conn *DmConnection, column *column, fetchAll bo
 	clob.tabId = column.lobTabId
 	clob.colId = column.lobColId
 
-	clob.inRow = Dm_build_1.Dm_build_94(value, NBLOB_HEAD_IN_ROW_FLAG) == LOB_IN_ROW
-	clob.blobId = Dm_build_1.Dm_build_108(value, NBLOB_HEAD_BLOBID)
+	clob.inRow = Packet.Dm_build_94(value, NBLOB_HEAD_IN_ROW_FLAG) == LOB_IN_ROW
+	clob.blobId = Packet.Dm_build_108(value, NBLOB_HEAD_BLOBID)
 	if !clob.inRow {
-		clob.groupId = Dm_build_1.Dm_build_98(value, NBLOB_HEAD_OUTROW_GROUPID)
-		clob.fileId = Dm_build_1.Dm_build_98(value, NBLOB_HEAD_OUTROW_FILEID)
-		clob.pageNo = Dm_build_1.Dm_build_103(value, NBLOB_HEAD_OUTROW_PAGENO)
+		clob.groupId = Packet.Dm_build_98(value, NBLOB_HEAD_OUTROW_GROUPID)
+		clob.fileId = Packet.Dm_build_98(value, NBLOB_HEAD_OUTROW_FILEID)
+		clob.pageNo = Packet.Dm_build_103(value, NBLOB_HEAD_OUTROW_PAGENO)
 	}
 	if conn.NewLobFlag {
-		clob.tabId = Dm_build_1.Dm_build_103(value, NBLOB_EX_HEAD_TABLE_ID)
-		clob.colId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_COL_ID)
-		clob.rowId = Dm_build_1.Dm_build_108(value, NBLOB_EX_HEAD_ROW_ID)
-		clob.exGroupId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_FPA_GRPID)
-		clob.exFileId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_FPA_FILEID)
-		clob.exPageNo = Dm_build_1.Dm_build_103(value, NBLOB_EX_HEAD_FPA_PAGENO)
+		clob.tabId = Packet.Dm_build_103(value, NBLOB_EX_HEAD_TABLE_ID)
+		clob.colId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_COL_ID)
+		clob.rowId = Packet.Dm_build_108(value, NBLOB_EX_HEAD_ROW_ID)
+		clob.exGroupId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_FPA_GRPID)
+		clob.exFileId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_FPA_FILEID)
+		clob.exPageNo = Packet.Dm_build_103(value, NBLOB_EX_HEAD_FPA_PAGENO)
 	}
 	clob.resetCurrentInfo()
 
 	clob.serverEncoding = conn.getServerEncoding()
 	if clob.inRow {
 		if conn.NewLobFlag {
-			clob.data = []rune(Dm_build_1.Dm_build_158(value, NBLOB_EX_HEAD_SIZE, int(clob.getLengthFromHead(value)), clob.serverEncoding, conn))
+			clob.data = []rune(Packet.Dm_build_158(value, NBLOB_EX_HEAD_SIZE, int(clob.getLengthFromHead(value)), clob.serverEncoding, conn))
 		} else {
-			clob.data = []rune(Dm_build_1.Dm_build_158(value, NBLOB_INROW_HEAD_SIZE, int(clob.getLengthFromHead(value)), clob.serverEncoding, conn))
+			clob.data = []rune(Packet.Dm_build_158(value, NBLOB_INROW_HEAD_SIZE, int(clob.getLengthFromHead(value)), clob.serverEncoding, conn))
 		}
 		clob.length = int64(len(clob.data))
 	} else if fetchAll {

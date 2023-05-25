@@ -335,7 +335,7 @@ func (st *DmStatement) prepare() error {
 		}
 	}
 
-	st.execInfo, err = st.dmConn.Access.Dm_build_772(st, Dm_build_1057)
+	st.execInfo, err = st.dmConn.Access.Dm_build_772(st, ExecType00)
 	if err != nil {
 		return err
 	}
@@ -385,7 +385,7 @@ func (stmt *DmStatement) exec(args []driver.Value) (*DmResult, error) {
 		}
 		err = stmt.executeBatch(tmpArg)
 	} else {
-		err = stmt.executeInner(args, Dm_build_1059)
+		err = stmt.executeInner(args, ExecType02)
 	}
 	if err != nil {
 		return nil, err
@@ -411,7 +411,7 @@ func (stmt *DmStatement) execContext(ctx context.Context, args []driver.NamedVal
 func (stmt *DmStatement) query(args []driver.Value) (*DmRows, error) {
 	var err error
 	stmt.inUse = true
-	err = stmt.executeInner(args, Dm_build_1058)
+	err = stmt.executeInner(args, ExecType01)
 	if err != nil {
 		return nil, err
 	}

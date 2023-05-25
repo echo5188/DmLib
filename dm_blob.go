@@ -46,20 +46,20 @@ func newBlobFromDB(value []byte, conn *DmConnection, column *column, fetchAll bo
 	blob.tabId = column.lobTabId
 	blob.colId = column.lobColId
 
-	blob.inRow = Dm_build_1.Dm_build_94(value, NBLOB_HEAD_IN_ROW_FLAG) == LOB_IN_ROW
-	blob.blobId = Dm_build_1.Dm_build_108(value, NBLOB_HEAD_BLOBID)
+	blob.inRow = Packet.Dm_build_94(value, NBLOB_HEAD_IN_ROW_FLAG) == LOB_IN_ROW
+	blob.blobId = Packet.Dm_build_108(value, NBLOB_HEAD_BLOBID)
 	if !blob.inRow {
-		blob.groupId = Dm_build_1.Dm_build_98(value, NBLOB_HEAD_OUTROW_GROUPID)
-		blob.fileId = Dm_build_1.Dm_build_98(value, NBLOB_HEAD_OUTROW_FILEID)
-		blob.pageNo = Dm_build_1.Dm_build_103(value, NBLOB_HEAD_OUTROW_PAGENO)
+		blob.groupId = Packet.Dm_build_98(value, NBLOB_HEAD_OUTROW_GROUPID)
+		blob.fileId = Packet.Dm_build_98(value, NBLOB_HEAD_OUTROW_FILEID)
+		blob.pageNo = Packet.Dm_build_103(value, NBLOB_HEAD_OUTROW_PAGENO)
 	}
 	if conn.NewLobFlag {
-		blob.tabId = Dm_build_1.Dm_build_103(value, NBLOB_EX_HEAD_TABLE_ID)
-		blob.colId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_COL_ID)
-		blob.rowId = Dm_build_1.Dm_build_108(value, NBLOB_EX_HEAD_ROW_ID)
-		blob.exGroupId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_FPA_GRPID)
-		blob.exFileId = Dm_build_1.Dm_build_98(value, NBLOB_EX_HEAD_FPA_FILEID)
-		blob.exPageNo = Dm_build_1.Dm_build_103(value, NBLOB_EX_HEAD_FPA_PAGENO)
+		blob.tabId = Packet.Dm_build_103(value, NBLOB_EX_HEAD_TABLE_ID)
+		blob.colId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_COL_ID)
+		blob.rowId = Packet.Dm_build_108(value, NBLOB_EX_HEAD_ROW_ID)
+		blob.exGroupId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_FPA_GRPID)
+		blob.exFileId = Packet.Dm_build_98(value, NBLOB_EX_HEAD_FPA_FILEID)
+		blob.exPageNo = Packet.Dm_build_103(value, NBLOB_EX_HEAD_FPA_PAGENO)
 	}
 	blob.resetCurrentInfo()
 
@@ -67,9 +67,9 @@ func newBlobFromDB(value []byte, conn *DmConnection, column *column, fetchAll bo
 	if blob.inRow {
 		blob.data = make([]byte, blob.length)
 		if conn.NewLobFlag {
-			Dm_build_1.Dm_build_57(blob.data, 0, value, NBLOB_EX_HEAD_SIZE, len(blob.data))
+			Packet.Dm_build_57(blob.data, 0, value, NBLOB_EX_HEAD_SIZE, len(blob.data))
 		} else {
-			Dm_build_1.Dm_build_57(blob.data, 0, value, NBLOB_INROW_HEAD_SIZE, len(blob.data))
+			Packet.Dm_build_57(blob.data, 0, value, NBLOB_INROW_HEAD_SIZE, len(blob.data))
 		}
 	} else if fetchAll {
 		blob.loadAllData()
@@ -190,7 +190,7 @@ func (blob *DmBlob) Truncate(length int64) error {
 			return nil
 		}
 		tmp := make([]byte, length)
-		Dm_build_1.Dm_build_57(tmp, 0, blob.data, 0, len(tmp))
+		Packet.Dm_build_57(tmp, 0, blob.data, 0, len(tmp))
 		blob.data = tmp
 		blob.length = int64(len(tmp))
 	} else {
@@ -203,7 +203,7 @@ func (blob *DmBlob) Truncate(length int64) error {
 		}
 		if blob.groupId == -1 {
 			tmp := make([]byte, blob.length)
-			Dm_build_1.Dm_build_57(tmp, 0, blob.data, 0, int(blob.length))
+			Packet.Dm_build_57(tmp, 0, blob.data, 0, int(blob.length))
 			blob.data = tmp
 		}
 	}
@@ -280,11 +280,11 @@ func (blob *DmBlob) loadAllData() {
 func (blob *DmBlob) setLocalData(pos int, p []byte) {
 	if pos+len(p) >= int(blob.length) {
 		var tmp = make([]byte, pos+len(p))
-		Dm_build_1.Dm_build_57(tmp, 0, blob.data, 0, pos)
-		Dm_build_1.Dm_build_57(tmp, pos, p, 0, len(p))
+		Packet.Dm_build_57(tmp, 0, blob.data, 0, pos)
+		Packet.Dm_build_57(tmp, pos, p, 0, len(p))
 		blob.data = tmp
 	} else {
-		Dm_build_1.Dm_build_57(blob.data, pos, p, 0, len(p))
+		Packet.Dm_build_57(blob.data, pos, p, 0, len(p))
 	}
 	blob.length = int64(len(blob.data))
 }

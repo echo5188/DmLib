@@ -159,7 +159,7 @@ const (
 
 	COLUMN_NAME_LOWER_CASE = 2
 
-	compressDef   = Dm_build_1053
+	compressDef   = compressVal0
 	compressIDDef = Dm_build_1054
 
 	charCodeDef = ""
@@ -505,7 +505,7 @@ func (c *DmConnector) setAttributes(props *Properties) error {
 	c.rwStandby = props.GetBool(RwStandbyKey, c.rwStandby)
 
 	if b := props.GetBool(IsCompressKey, false); b {
-		c.compress = Dm_build_1052
+		c.compress = compressVal2
 	}
 
 	c.compress = props.GetInt(CompressKey, c.compress, 0, 2)
@@ -861,7 +861,7 @@ func (c *DmConnector) connectSingle(ctx context.Context) (*DmConnection, error) 
 		dc.reset()
 	}
 
-	dc.Access, err = dm_build_709(dc)
+	dc.Access, err = buildAccess(dc)
 	if err != nil {
 		return nil, err
 	}
